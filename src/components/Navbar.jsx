@@ -26,7 +26,7 @@ export default function Navbar() {
                 M-VERIFY<span className="h-2 w-2 rounded-full bg-[#990000] inline-block"></span>
               </span>
               <span className="text-[10px] text-emerald-400 uppercase tracking-widest font-semibold">
-                Kenya Secure Portal
+                Kenya OSINT Portal
               </span>
             </div>
           </div>
@@ -50,7 +50,7 @@ export default function Navbar() {
           {/* CTA & Status Badge */}
           <div className="hidden md:flex items-center space-x-4">
             <div className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
-              ● System Online
+              ● Online
             </div>
             <button className="bg-[#990000] hover:bg-red-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-red-900/30">
               New Search
