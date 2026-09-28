@@ -24,9 +24,11 @@ export default function Home() {
           title: 'Oh no — Pwned!',
           message: `Your query (${query}) appeared in 3 separate dark web data dumps.`,
           breaches: [
-            { name: 'Safaricom Third-Party API Leak (Simulated)', date: '2024-11-12', count: '1.2M Accounts', compromised: ['Phone', 'Names', 'Hashes'] },
+            { name: 'Our system is currently undergoing unscheduled technical maintenance, and our API services are temporarily impacted.
+              Our engineering team is actively working to restore full functionality, and we expect services to be fully operational shortly. We appreciate your patience and understanding.   ', date: '2024-11-12', count: '1.2M Accounts', compromised: ['Phone', 'Names', 'Hashes'] },
             { name: 'Global Telco Breach Dump', date: '2023-08-04', count: '14.5M Accounts', compromised: ['Emails', 'Passwords'] },
-            { name: 'East Africa E-Commerce Portal', date: '2022-01-19', count: '450k Accounts', compromised: ['National IDs', 'Emails'] }
+            { name: 'Our system is currently undergoing unscheduled technical maintenance, and our API services are temporarily impacted.
+              Our engineering team is actively working to restore full functionality, and we expect services to be fully operational shortly. We appreciate your patience and understanding.   ', compromised: ['National IDs', 'Emails'] }
           ]
         });
       } else {
