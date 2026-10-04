@@ -1,60 +1,65 @@
 import React, { useState } from 'react';
+import api from '../services/api';
 
 export default function Home() {
   const [query, setQuery] = useState('');
   const [searchType, setSearchType] = useState('auto');
   const [isSearching, setIsSearching] = useState(false);
   const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     if (!query.trim()) return;
-
     setIsSearching(true);
     setResult(null);
-
-    // Simulated API scan response
-    setTimeout(() => {
-      setIsSearching(false);
-      const isBreached = Math.random() > 0.5;
-
-      if (isBreached) {
+    setError('');
+    try {
+      const { data } = await api.post('/api/verify/search', {
+        query: query.trim(),
+        type: searchType,
+      });
+      if (data.found) {
         setResult({
           status: 'pwned',
           title: 'Oh no — Pwned!',
-          message: `Your query (${query}) appeared in 3 separate dark web data dumps.`,
+          message: data.remarks || `Record found for "${data.query || query}"`,
           breaches: [
-            { name: 'Our system is currently undergoing unscheduled technical maintenance, and our API services are temporarily impacted.
-              Our engineering team is actively working to restore full functionality, and we expect services to be fully operational shortly. We appreciate your patience and understanding.   ', date: '2024-11-12', count: '1.2M Accounts', compromised: ['Phone', 'Names', 'Hashes'] },
-            { name: 'Global Telco Breach Dump', date: '2023-08-04', count: '14.5M Accounts', compromised: ['Emails', 'Passwords'] },
-            { name: 'Our system is currently undergoing unscheduled technical maintenance, and our API services are temporarily impacted.
-              Our engineering team is actively working to restore full functionality, and we expect services to be fully operational shortly. We appreciate your patience and understanding.   ', compromised: ['National IDs', 'Emails'] }
-          ]
+            {
+              name: data.idNumber ? `ID: ${data.idNumber}` : 'Record match',
+              date: data.verifiedAt || data.createdAt || '',
+              count: data.status || '',
+              compromised: [
+                ...(data.phone ? ['Phone'] : []),
+                ...(data.fullName ? ['Full Name'] : []),
+                ...(data.email ? ['Email'] : []),
+              ],
+            },
+          ],
         });
       } else {
         setResult({
           status: 'safe',
           title: 'Good news — No pwnage found!',
           message: `No breached data records found for "${query}". Your security posture looks solid.`,
-          breaches: []
+          breaches: [],
         });
       }
-    }, 1200);
+    } catch (err) {
+      setError(err?.response?.data?.error || 'Search failed');
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white font-sans antialiased">
-      {/* Header Banner - Kenyan Flag Stripes */}
       <div className="flex flex-col h-2.5 w-full">
         <div className="flex-1 bg-black"></div>
         <div className="flex-1 bg-red-700"></div>
         <div className="flex-1 bg-emerald-700"></div>
       </div>
-
-      {/* Main Container */}
       <main className="max-w-4xl mx-auto px-5 py-16">
-        
-        {/* Hero Title */}
         <div className="text-center mb-10">
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-3">
             Have I Been <span className="text-red-600">Pwned</span>{' '}
@@ -66,10 +71,7 @@ export default function Home() {
             Check if your email, phone number (+254), National ID, or domain has been exposed in a data breach.
           </p>
         </div>
-
-        {/* Search Controls */}
         <form onSubmit={handleSearch} className="mb-10">
-          {/* Type Selector Tabs */}
           <div className="flex flex-wrap justify-center gap-2 mb-4">
             {['auto', 'email', 'phone', 'national_id', 'domain'].map((type) => (
               <button
@@ -86,8 +88,6 @@ export default function Home() {
               </button>
             ))}
           </div>
-
-          {/* Input & Action Button */}
           <div className="flex shadow-2xl rounded-lg overflow-hidden border-2 border-neutral-800 focus-within:border-red-700 transition-colors">
             <input
               type="text"
@@ -112,9 +112,8 @@ export default function Home() {
               {isSearching ? 'Scanning...' : 'pwned?'}
             </button>
           </div>
+          {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
         </form>
-
-        {/* Scan Results Card */}
         {result && (
           <div
             className={`border-2 rounded-lg p-6 mb-10 transition-all ${
@@ -131,7 +130,6 @@ export default function Home() {
               {result.title}
             </h2>
             <p className="text-neutral-300 text-base mb-6">{result.message}</p>
-
             {result.breaches.length > 0 && (
               <div className="border-t border-neutral-800 pt-4">
                 <h3 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-3">
@@ -165,8 +163,6 @@ export default function Home() {
             )}
           </div>
         )}
-
-        {/* Information Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-10">
           <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-5">
             <h3 className="text-emerald-400 font-bold text-lg mb-2">⚡ Live Threat Level: KE</h3>
@@ -174,14 +170,12 @@ export default function Home() {
               Current regional cyber hazard index: <strong className="text-white">MODERATE</strong>. Increased phishing spoofing local bank USSD codes reported.
             </p>
           </div>
-
           <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-5">
             <h3 className="text-red-500 font-bold text-lg mb-2">🛡️ Domain Watchdog</h3>
             <p className="text-neutral-400 text-sm leading-relaxed">
               Monitor entire <code className="text-neutral-200 bg-neutral-800 px-1 rounded">.co.ke</code> or <code className="text-neutral-200 bg-neutral-800 px-1 rounded">.or.ke</code> corporate domains to protect employee data exposures.
             </p>
           </div>
-
           <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-5">
             <h3 className="text-white font-bold text-lg mb-2">📊 Breach Counter</h3>
             <p className="text-neutral-400 text-sm leading-relaxed">
@@ -189,7 +183,6 @@ export default function Home() {
             </p>
           </div>
         </div>
-
       </main>
     </div>
   );
