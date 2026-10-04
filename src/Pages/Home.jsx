@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from '../services/api';
+import { verifyApi } from '../services/api';
 
 export default function Home() {
   const [query, setQuery] = useState('');
@@ -15,10 +15,7 @@ export default function Home() {
     setResult(null);
     setError('');
     try {
-      const { data } = await api.post('/api/verify/search', {
-        query: query.trim(),
-        type: searchType,
-      });
+      const { data } = await verifyApi.search(query.trim(), searchType);
       if (data.found) {
         setResult({
           status: 'pwned',
